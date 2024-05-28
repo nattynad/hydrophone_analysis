@@ -12,7 +12,6 @@ save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H7
 
 % folder = 'fus_instruments\marc\sites\childrens_copley_rk50'
 % filename = '508_T1490H750_sweep_1.hdf5';
-
 % hyd_sens = 5.819E-008;  % V/Pa
 
 % specify the full path to the HDF5 data file
@@ -126,8 +125,6 @@ end
 
 %%
 max_volt = zeros(5, 1);
-resonant_freq = zeros(5, 1);
-index_resonance = zeros(5, 1);
 
 % this subtracts a frequency by 825kHz and finds the minimum difference. the
 % minimum difference means it it the number closest to 825kHz
