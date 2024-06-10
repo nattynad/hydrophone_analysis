@@ -1,10 +1,10 @@
 close all
-clc
+%clc
 
 % define the folder, and the filename of the HDF5 file for reading
 % dropbox_loc = 'D:\Dropbox';
 % dropbox_loc = 'C:\Users\Marc\Dropbox';
-folder = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\540-T550H825\scan_data\01-H825_hydrophone_calibration';
+folder = 'C:\Users\RKPC\Documents\Calibration Data\540-T550H825\scan_data\01-H825_hydrophone_calibration';
 fileList = {'540_T550H825_sweep_825kHz_5_cycles_01.hdf5', '540_T550H825_sweep_825kHz_5_cycles_02.hdf5', ...
     '540_T550H825_sweep_825kHz_5_cycles_03.hdf5', '540_T550H825_sweep_825kHz_5_cycles_04.hdf5', ...
     '540_T550H825_sweep_825kHz_5_cycles_05.hdf5'};
@@ -20,8 +20,10 @@ save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H7
 
 % get the source transducer data
 
-folder_source = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\01-H825\Scan Data';
-filename_source = '01_TH825_sweep_825kHz_05.hdf5';
+folder_source = 'C:\Users\RKPC\Documents\Calibration Data\01-H825\Scan Data\hydrophone_calibration';
+% folder_source = 'C:\Users\RKPC\Documents\Calibration Data\01-H825\Scan Data';
+% filename_source = '01_TH825_sweep_825kHz_05.hdf5';
+filename_source = '01_TH825_sweep_825kHz_5_cycles_01.hdf5';
 
 save_location2 = 'C:\Users\Marc\Dropbox\fus_instruments\marc\calibration_data\Hydrophone Scan\524_T1570H750_QUEENS';
 
@@ -193,14 +195,14 @@ for n = 1:length(fileList)
     % ylabel('Output seen by Hydrophone, V');
 
     %%    
-    % figure;
-    % hold on;
-    % plot(input_mV_source, neg_pressure_source, 'o');
-    % % plot(input_mV, abs(max_mV), 'o');
-    % hold off;
-    % grid on;
-    % xlabel('Input, mV');
-    % ylabel('Peak Negative Pressure, Pa');
+    figure;
+    hold on;
+    plot(input_mV_source, neg_pressure_source, 'o');
+    % plot(input_mV, abs(max_mV), 'o');
+    hold off;
+    grid on;
+    xlabel('Input, mV');
+    ylabel('Peak Negative Pressure, Pa');
     
     input_press_source = zeros(len_input_mV, 1);
     
@@ -215,15 +217,16 @@ for n = 1:length(fileList)
     % pressure it exerted.
     
     hyd_sens = polyfit(input_press_source, max_volt, 1);
-    xfit = linspace(min(input_press_source), max(input_press_source), 10000);
-    yfit = polyval(hyd_sens, xfit);
+    % xfit = linspace(min(input_press_source), max(input_press_source), 10000);
+    B = input_press_source(:)\max_volt(:);
+    yfit = input_press_source(:)*B;
     hyd_sens = hyd_sens(1)*1e+9;
     
     figure;
     hold on
     plot(input_press_source, max_volt, 'o');
-    %plot(input_press_source, max_volt, '--');
-    Hfit = plot(xfit, yfit, '-', "MarkerFaceColor",[0.8500 0.3250 0.0980]);
+    % plot(input_press_source, max_volt, '--');
+    Hfit = plot(input_press_source, yfit, '-', "MarkerFaceColor",[0.8500 0.3250 0.0980]);
     xlabel('Pressure of Source, Pa');
     ylabel('Voltage seen on Hydrophone, V');
     legendString = sprintf('Sensitivity = %.4f mV/MPa', hyd_sens);
