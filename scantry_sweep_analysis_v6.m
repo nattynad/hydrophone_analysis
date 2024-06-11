@@ -4,10 +4,10 @@ clc
 % define the folder, and the filename of the HDF5 file for reading
 % dropbox_loc = 'D:\Dropbox';
 % dropbox_loc = 'C:\Users\Marc\Dropbox';
-folder = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\600-T1650H825\Scan Data\01-H825_hydrophone_calibration';
-fileList = {'600_T1650H825_sweep_825kHz_5_cycles_01.hdf5', '600_T1650H825_sweep_825kHz_5_cycles_02.hdf5', ...
-    '600_T1650H825_sweep_825kHz_5_cycles_03.hdf5', '600_T1650H825_sweep_825kHz_5_cycles_04.hdf5', ...
-    '600_T1650H825_sweep_825kHz_5_cycles_05.hdf5'};
+folder = 'C:\Users\RKPC\Documents\Calibration Data\571-T1000H550\Scan Data\01-H825_hydrophone_calibration';
+fileList = {'571_T1000H550_sweep_825kHz_5_cycles_01.hdf5', '571_T1000H550_sweep_825kHz_5_cycles_02.hdf5', ...
+    '571_T1000H550_sweep_825kHz_5_cycles_03.hdf5', '571_T1000H550_sweep_825kHz_5_cycles_04.hdf5', ...
+    '571_T1000H550_sweep_825kHz_5_cycles_05.hdf5'};
 
 save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H750\other (matlab sweep)';
 
@@ -226,7 +226,10 @@ for n = 1:length(fileList)
     hold on
     plot(input_press_source, max_volt, 'o');
     % plot(input_press_source, max_volt, '--');
+    input_press_source = [0 ; input_press_source];
+    yfit = [0; yfit];
     Hfit = plot(input_press_source, yfit, '-', "MarkerFaceColor",[0.8500 0.3250 0.0980]);
+    % plot(0,0);
     xlabel('Pressure of Source, Pa');
     ylabel('Voltage seen on Hydrophone, V');
     legendString = sprintf('Sensitivity = %.4f mV/MPa', hyd_sens);

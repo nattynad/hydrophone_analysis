@@ -135,9 +135,8 @@ for n = 1:length(fileList)
     % xlabel('Input, mV');
     % ylabel('Output, Pa');
     % legend('Negative Pressure (Min)', 'Positive Pressure (Max)');
-    % title('Sweep', n);
+    % title('Sweep %d', n);
     % hold off;
-
     %% 
     ts = zeros(len_raw_press_Pa, len_input_mV);
     for i = 1:len_input_mV
@@ -166,15 +165,15 @@ for n = 1:length(fileList)
     for i = 1:len_input_mV
         % plots the FFT. Here the ampltidue is important (voltage seen at the
         % hydrophone).
-        figure;
-        hold on;
-        plot(f, P1_mat(:, i));
-        grid on;
-        ylabel('fft Amplitude');
-        xlabel('f (Hz)');
-        titleString = sprintf('FFT at %d mV, Sweep %d', i*10, n);
-        title(titleString);
-        hold off;
+        % figure;
+        % hold on;
+        % plot(f, P1_mat(:, i));
+        % grid on;
+        % ylabel('fft Amplitude');
+        % xlabel('f (Hz)');
+        % titleString = sprintf('FFT at %d mV, Sweep %d', i*10, n);
+        % title(titleString);
+        % hold off;
     end
     
     %%
@@ -199,7 +198,7 @@ for n = 1:length(fileList)
     % figure;
     % hold on;
     % plot(input_mV_source, neg_pressure_source, 'o');
-    % plot(input_mV, abs(max_mV), 'o');
+    % % plot(input_mV, abs(max_mV), 'o');
     % hold off;
     % grid on;
     % xlabel('Input, mV');
@@ -227,7 +226,10 @@ for n = 1:length(fileList)
     hold on
     plot(input_press_source, max_volt, 'o');
     % plot(input_press_source, max_volt, '--');
+    input_press_source = [0 ; input_press_source];
+    yfit = [0; yfit];
     Hfit = plot(input_press_source, yfit, '-', "MarkerFaceColor",[0.8500 0.3250 0.0980]);
+    % plot(0,0);
     xlabel('Pressure of Source, Pa');
     ylabel('Voltage seen on Hydrophone, V');
     legendString = sprintf('Sensitivity = %.4f mV/MPa', hyd_sens);

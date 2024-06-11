@@ -229,7 +229,10 @@ for n = 1:length(fileList)
     hold on
     plot(input_press_source, max_volt, 'o');
     % plot(input_press_source, max_volt, '--');
+    input_press_source = [0 ; input_press_source];
+    yfit = [0; yfit];
     Hfit = plot(input_press_source, yfit, '-', "MarkerFaceColor",[0.8500 0.3250 0.0980]);
+    % plot(0,0);
     xlabel('Pressure of Source, Pa');
     ylabel('Voltage seen on Hydrophone, V');
     legendString = sprintf('Sensitivity = %.4f mV/MPa', hyd_sens);
