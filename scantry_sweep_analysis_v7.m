@@ -1,11 +1,11 @@
-% close all
+close all
 % clc
 
 % define the folder, and the filename of the HDF5 file for reading
 % dropbox_loc = 'D:\Dropbox';
 % dropbox_loc = 'C:\Users\Marc\Dropbox';
 folder = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\531-T1650H825_hydrophone';
-fileList = {'531_T1650H825_sweep_1200kHz_01.hdf5', '531_T1650H825_sweep_1200kHz_02.hdf5', '531_T1650H825_sweep_1200kHz_03.hdf5'};
+fileList = {'531_T1650H825_sweep_1000kHz_01.hdf5', '531_T1650H825_sweep_1000kHz_02.hdf5', '531_T1650H825_sweep_1000kHz_03.hdf5'};
 
 % '531_T1650H825_sweep_1000kHz_01.hdf5', '531_T1650H825_sweep_1000kHz_02.hdf5', '531_T1650H825_sweep_1000kHz_03.hdf5'
 % '531_T1650H825_sweep_1200kHz_01.hdf5', '531_T1650H825_sweep_1200kHz_02.hdf5', '531_T1650H825_sweep_1200kHz_03.hdf5'
@@ -25,7 +25,7 @@ save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H7
 folder_source = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\OLYMPUS-1MHz';
 % folder_source = 'C:\Users\RKPC\Documents\Calibration Data\01-H825\Scan Data';
 % filename_source = '01_TH825_sweep_825kHz_05.hdf5';
-filename_source = 'V314_sweep_1200kHz_33.5us_03.hdf5';
+filename_source = 'V314_sweep_1000kHz_33.5us_03.hdf5';
 
 save_location2 = 'C:\Users\Marc\Dropbox\fus_instruments\marc\calibration_data\Hydrophone Scan\524_T1570H750_QUEENS';
 
@@ -210,7 +210,7 @@ for n = 1:length(fileList)
     
     % k is the starting limit of the voltage sweeps. k = k + n, where n is
     % your step size 
-    k = 1000;
+    k = 1050;
     for i = 1:len_input_mV
         input_press_source(i) = (neg_pressure_source(find(input_mV_source==k)))/10;
         k = k + 200;
