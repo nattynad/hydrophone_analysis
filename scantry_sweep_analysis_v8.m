@@ -5,7 +5,7 @@
 % dropbox_loc = 'D:\Dropbox';
 % dropbox_loc = 'C:\Users\Marc\Dropbox';
 folder = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\531-T1650H825_hydrophone\Redo_Oct_23';
-fileList = {'531_T1650H825_sweep_1650kHz_01.hdf5', '531_T1650H825_sweep_1650kHz_02.hdf5', '531_T1650H825_sweep_1650kHz_03.hdf5'};
+fileList = {'531_T1650H825_sweep_300kHz_02.hdf5', '531_T1650H825_sweep_400kHz_02.hdf5', '531_T1650H825_sweep_500kHz_03.hdf5', '531_T1650H825_sweep_550kHz_03.hdf5'};
 
 % '531_T1650H825_sweep_1000kHz_01.hdf5', '531_T1650H825_sweep_1000kHz_02.hdf5', '531_T1650H825_sweep_1000kHz_03.hdf5'
 % '531_T1650H825_sweep_1200kHz_01.hdf5', '531_T1650H825_sweep_1200kHz_02.hdf5', '531_T1650H825_sweep_1200kHz_03.hdf5'
@@ -25,7 +25,7 @@ save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H7
 folder_source = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\ALL_FREQS_FILES';
 % folder_source = 'C:\Users\RKPC\Documents\Calibration Data\01-H825\Scan Data';
 % filename_source = '01_TH825_sweep_825kHz_05.hdf5';
-filename_source = 'V305_sweep_1650kHz_33.5us_03.hdf5';
+filelist_source = {'V318_sweep_300kHz_33.5us_03.hdf5', 'V318_sweep_400kHz_33.5us_03.hdf5', 'V318_sweep_500kHz_33.5us_03.hdf5', 'V318_sweep_550kHz_33.5us_03.hdf5'};
 
 save_location2 = 'C:\Users\Marc\Dropbox\fus_instruments\marc\calibration_data\Hydrophone Scan\524_T1570H750_QUEENS';
 
@@ -35,25 +35,41 @@ save_location2 = 'C:\Users\Marc\Dropbox\fus_instruments\marc\calibration_data\Hy
 
 % hyd_sens = 5.819E-008;  % V/Pa
 
-% specify the full path to the HDF5 data file
-h5_filename_source = fullfile(folder_source, filename_source);
-
-h5_info_source = h5info(h5_filename_source);
-
-% load the first burst to understand data lengths
-input_mV_source = h5read(h5_filename_source, '/Scan/Input voltage amplitude (mV)');
-len_input_mV_source = length(input_mV_source);
-
-min_mV_source = h5read(h5_filename_source, '/Scan/Min output pressure (Pa)');
-len_min_mV_source = length(min_mV_source);
-
-metadata_source = h5read(h5_filename_source, '/Scan/Scan metadata');
-
-neg_pressure_source = abs(min_mV_source);
+% % specify the full path to the HDF5 data file
+% h5_filename_source = fullfile(folder_source, filename_source);
+% 
+% h5_info_source = h5info(h5_filename_source);
+% 
+% % load the first burst to understand data lengths
+% input_mV_source = h5read(h5_filename_source, '/Scan/Input voltage amplitude (mV)');
+% len_input_mV_source = length(input_mV_source);
+% 
+% min_mV_source = h5read(h5_filename_source, '/Scan/Min output pressure (Pa)');
+% len_min_mV_source = length(min_mV_source);
+% 
+% metadata_source = h5read(h5_filename_source, '/Scan/Scan metadata');
+% 
+% neg_pressure_source = abs(min_mV_source);
 
 hyd_sens_array = [];
+freq_arr = [];
 %%
 for n = 1:length(fileList)    
+    h5_filename_source = fullfile(folder_source, filelist_source{n});
+
+    h5_info_source = h5info(h5_filename_source);
+
+    % load the first burst to understand data lengths
+    input_mV_source = h5read(h5_filename_source, '/Scan/Input voltage amplitude (mV)');
+    len_input_mV_source = length(input_mV_source);
+
+    min_mV_source = h5read(h5_filename_source, '/Scan/Min output pressure (Pa)');
+    len_min_mV_source = length(min_mV_source);
+
+    metadata_source = h5read(h5_filename_source, '/Scan/Scan metadata');
+
+    neg_pressure_source = abs(min_mV_source);
+
     % specify the full path to the HDF5 data file
     h5_filename = fullfile(folder, fileList{n});
     
@@ -93,6 +109,12 @@ for n = 1:length(fileList)
     sampling_period = str2double(outputs{4});
     
     sampling_frequency = 1/(sampling_period*1e-9);
+
+    %gets the frequency being tested at
+    my_string = metadata{2};
+    outputs = strsplit(my_string);
+    freq = (str2double(outputs{6}))*1e6;
+    freq_arr = [freq_arr; freq];
     
     %gets the trigger delay (how much we delayed the graph)
     my_string = metadata{3};
@@ -183,7 +205,7 @@ for n = 1:length(fileList)
     
     % this subtracts a frequency by 825kHz and finds the minimum difference. the
     % minimum difference means it it the number closest to 825kHz
-    [~, idx] = min(abs(f - 1650000));
+    [~, idx] = min(abs(f - freq));
     % closest_y_val = P1_mat(idx,:);
     
     % collecting the voltages that occur in the hydrophone at the resonant f of the transducers
@@ -210,10 +232,11 @@ for n = 1:length(fileList)
     
     % k is the starting limit of the voltage sweeps. k = k + n, where n is
     % your step size 
-    k = 1000;
+    k = input_mV_source(1,1);
+    step = input_mV_source(2,1)-input_mV_source(1,1);
     for i = 1:len_input_mV
         input_press_source(i) = (neg_pressure_source(find(input_mV_source==k))); %/10 before, idrk if i need that anymore?
-        k = k + 200;
+        k = k + step;
     end
     
     %%
@@ -242,18 +265,19 @@ for n = 1:length(fileList)
     title(titleString);
     hold off
     
-    fprintf('Sweep %d, Hydrophone Sensitivity = %0.1f mV/MPa\n', n, hyd_sens);
+    % fprintf('Sweep %d, Hydrophone Sensitivity = %0.1f mV/MPa\n', n, hyd_sens);
 
     hyd_sens_array = [hyd_sens_array; hyd_sens];
-end
 
-[std_dev_deci, final_hyd_sens] = std(hyd_sens_array);
-std_dev = round(std_dev_deci);
-if std_dev == 0
-    std_dev = 1;
-end
-fprintf('\nFinal Hydrophone Sensitivity = %0.0f ± %d mV/MPa\n\n', final_hyd_sens, std_dev);
+    [std_dev_deci, final_hyd_sens] = std(hyd_sens_array(n,1));
+    std_dev = round(std_dev_deci);
+    if std_dev == 0
+        std_dev = 1;
+    end
+    fprintf('\nAverage Hydrophone Sensitivity at %0.3g MHz = %0.0f ± %d mV/MPa\n\n', freq/1e6, final_hyd_sens, std_dev);
 
+end
+hydrophone_arr = [freq_arr, hyd_sens_array];
 %% DONT WORRY ABOUT THIS FOR NOW
 
 % % neg_pressure = abs(min_mV) .* 1e-3 ./ hyd_sens .* 1e-6;  % MPa
