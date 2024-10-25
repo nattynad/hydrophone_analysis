@@ -1,11 +1,11 @@
-% close all
+close all
 % clc
 
 % define the folder, and the filename of the HDF5 file for reading
 % dropbox_loc = 'D:\Dropbox';
 % dropbox_loc = 'C:\Users\Marc\Dropbox';
-folder = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\531-T1650H825_hydrophone\Redo_Oct_23';
-fileList = {'531_T1650H825_sweep_1650kHz_01.hdf5', '531_T1650H825_sweep_1650kHz_02.hdf5', '531_T1650H825_sweep_1650kHz_03.hdf5'};
+folder = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\532-T500H750_hydrophone\Redo_Oct_23';
+fileList = {'532_T500H750_sweep_700kHz_01.hdf5', '532_T500H750_sweep_700kHz_02.hdf5', '532_T500H750_sweep_700kHz_03.hdf5'};
 
 % '531_T1650H825_sweep_1000kHz_01.hdf5', '531_T1650H825_sweep_1000kHz_02.hdf5', '531_T1650H825_sweep_1000kHz_03.hdf5'
 % '531_T1650H825_sweep_1200kHz_01.hdf5', '531_T1650H825_sweep_1200kHz_02.hdf5', '531_T1650H825_sweep_1200kHz_03.hdf5'
@@ -25,7 +25,7 @@ save_location = 'C:\Users\RKPC\Dropbox\Toronto Team\Calibration Data\323-T1500H7
 folder_source = 'C:\Users\RKPC\My Drive\Natalie\Hydrophone Characterization\Calibration Data\ALL_FREQS_FILES';
 % folder_source = 'C:\Users\RKPC\Documents\Calibration Data\01-H825\Scan Data';
 % filename_source = '01_TH825_sweep_825kHz_05.hdf5';
-filename_source = 'V305_sweep_1650kHz_33.5us_03.hdf5';
+filename_source = 'V314_sweep_700kHz_33.5us_03.hdf5';
 
 save_location2 = 'C:\Users\Marc\Dropbox\fus_instruments\marc\calibration_data\Hydrophone Scan\524_T1570H750_QUEENS';
 
@@ -62,6 +62,10 @@ for n = 1:length(fileList)
     % load the first burst to understand data lengths
     input_mV = h5read(h5_filename, '/Scan/Input voltage amplitude (mV)');
     len_input_mV = length(input_mV);
+    if len_input_mV > 21
+        input_mV = input_mV(11:end, 1);
+        len_input_mV = length(input_mV);
+    end
     
     max_mV = h5read(h5_filename, '/Scan/Max output pressure (Pa)'); %positive axis
     len_max_mV = length(max_mV);
@@ -93,6 +97,12 @@ for n = 1:length(fileList)
     sampling_period = str2double(outputs{4});
     
     sampling_frequency = 1/(sampling_period*1e-9);
+
+    %gets the frequency being tested at
+    my_string = metadata{2};
+    outputs = strsplit(my_string);
+    freq = (str2double(outputs{6}))*1e6;
+    freq_arr = [freq_arr; freq];
     
     %gets the trigger delay (how much we delayed the graph)
     my_string = metadata{3};
@@ -183,7 +193,7 @@ for n = 1:length(fileList)
     
     % this subtracts a frequency by 825kHz and finds the minimum difference. the
     % minimum difference means it it the number closest to 825kHz
-    [~, idx] = min(abs(f - 1650000));
+    [~, idx] = min(abs(f - freq));
     % closest_y_val = P1_mat(idx,:);
     
     % collecting the voltages that occur in the hydrophone at the resonant f of the transducers
